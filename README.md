@@ -251,6 +251,8 @@ What you should see is a list of records of the countries we seeded that include
 }
 ```
 
+**SUCCESS!!** You just seeded a database! Now, you can use what you already learned to interact with this new data set in MongoDB.
+
 ![Success](https://media.giphy.com/media/vViFKLAOQdDlS/giphy.gif)
 
 ## [License](LICENSE)
