@@ -2,7 +2,9 @@
 
 # Database Seeding
 
-So far, we have been able to interact with our database through the Mongo CLI and through Mongoose queries.
+So far, we have been able to interact with our database through the Mongo CLI and through Mongoose queries. As we move forward with our back end, we will be building APIs that feature full CRUD functionality, implemented directly from our applications.
+
+To ensure our functionality works the way that we want it to, it's a good idea to test it on actual data. That's where database seeding comes in. **Database seeding** is a process in which an initial set of data is provided to a database during development.
 
 ## Prerequisites
 
