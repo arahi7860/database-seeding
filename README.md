@@ -238,6 +238,21 @@ Last but not least, read the data you have just added!
 db.countries.find().pretty()
 ```
 
+What you should see is a list of records of the countries we seeded that include the properties we specified earlier in addition to `ObjectId` and `__v` properties.
+
+```bash
+{
+	"_id" : ObjectId("5dc2db6224a43721f694e471"),
+	"name" : "Afghanistan",
+	"capital" : "Kabul",
+	"region" : "Asia",
+	"population" : 27657145,
+	"__v" : 0
+}
+```
+
+![Success](https://media.giphy.com/media/vViFKLAOQdDlS/giphy.gif)
+
 ## [License](LICENSE)
 
 1. All content is licensed under a CC­BY­NC­SA 4.0 license.
