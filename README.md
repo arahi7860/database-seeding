@@ -160,7 +160,6 @@ In `seed.js`, add the following code:
 ```js
 // db/seed.js
 
-const Country = require('../models/Country.js')
 const data = require('./data.json')
 
 const countryData = data.map(item => {
@@ -189,6 +188,10 @@ Add the following code to `db/seed.js`:
 
 ```js
 // db/seed.js
+
+const Country = require('../models/Country.js')
+
+// ...
 
 Country.remove({})
     .then(() => {
