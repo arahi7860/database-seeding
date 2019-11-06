@@ -57,6 +57,8 @@ npm install node-fetch
 This will install the dependency `node-fetch`. Next, we will need to import this dependency using the `require()` method. Let's do this in the `getCountries.js` file. This is where we will be retrieving data from the API.
 
 ```js
+// db/getCountries.js
+
 const fetch = require('node-fetch');
 ```
 
@@ -67,6 +69,8 @@ Use the `fetch()` method to retrieve data on **all countries** from the REST Cou
 > Since we are in a server-side environment, where will be look for the data?
 
 ```js
+// db/getCountries.js
+
 const url = 'https://restcountries.eu/rest/v2/all'
 
 fetch(url)
@@ -85,6 +89,8 @@ Earlier, we used the `fs` module to write and read to/from the filesystem. We we
 Update the code in `getCountries.js`:
 
 ```js
+// db/getCountries.js
+
 const fs = require('fs')
 
 // ...
@@ -123,6 +129,8 @@ Now that we have all of the data in `data.json`, let's pick out the properties w
 In `models/Country.js`, build a model to include the above properties. Pay attention to the data types from the data we have in our `data.json` file. In addition to the the Schema, what else do you need in this file?
 
 ```js
+// models/Country.js
+
 const Schema = mongoose.Schema
 
 const Country = new Schema({
@@ -150,6 +158,8 @@ We have a TON of data in our `data.json` file. We need some of it, but most of i
 In `seed.js`, add the following code:
 
 ```js
+// db/seed.js
+
 const Country = require('../models/Country.js')
 const data = require('./data.json')
 
