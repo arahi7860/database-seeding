@@ -25,9 +25,9 @@ By the end of this, developers should be able to:
 
 ### Getting Started
 
-1. Fork and clone [this repository](https://git.generalassemb.ly/dc-wdi-node-express/countries-api).
-1. Change into directory.
-1. Install all dependencies.
+1. Fork and clone [this repository](https://git.generalassemb.ly/dc-wdi-node-express/countries-api)
+1. Change into directory
+1. Install all dependencies
 1. Examine the codebase
 
 Take a few minutes to examine the codebase here.
@@ -38,6 +38,15 @@ Take a few minutes to examine the codebase here.
 ### Fetch Data from the API
 
 For this application, we will be using the [REST Countries API](https://restcountries.eu/). Take a few moments to familiarize yourself with the API. What is the endpoint to fetch all countries from the API?
+
+<details>
+    <summary><b>GET All Countries</b></summary>
+
+```js
+'https://restcountries.eu/rest/v2/all'
+```
+</details>
+
 
 In the past, we have used the `fetch()` method in a browser environment. Now that we are using JavaScript in a server-side environment, we need to install `fetch`. First, run the command:
 
@@ -57,9 +66,6 @@ Use the `fetch()` method to retrieve data on **all countries** from the REST Cou
 
 > Since we are in a server-side environment, where will be look for the data?
 
-<details>
-    <summary>Solution</summary>
-
 ```js
 const url = 'https://restcountries.eu/rest/v2/all'
 
@@ -69,7 +75,6 @@ fetch(url)
         console.log(res)
     })
 ```
-</details>
 
 Take a look at the data that is being returned in the terminal. What is the structure of the JSON. What are the properties? How would we access the values within this data set?
 
