@@ -133,6 +133,8 @@ const Country = new Schema({
 module.exports = mongoose.model('Country', Country)
 ```
 
+</details>
+
 What's happening here?
 
 1. First, we a variable `Schema` and giving it a value of `mongoose.Schema`.
