@@ -19,13 +19,11 @@ By the end of this, developers should be able to:
 - Define a model based on a few properties of the data set fetched from the API
 - Seed data to a local MongoDB database
 
-## I Do: Countries API App
-<!-- Add the link -->
+## [Countries API App](https://git.generalassemb.ly/dc-wdi-node-express/countries-api)
 
 ### Getting Started
 
-1. Fork and clone this repository.
-<!-- Add the link -->
+1. Fork and clone [this repository](https://git.generalassemb.ly/dc-wdi-node-express/countries-api).
 1. Change into directory.
 1. Install all dependencies.
 1. Examine the codebase
@@ -51,7 +49,7 @@ This will install the dependency `node-fetch`. Next, we will need to import this
 const fetch = require('node-fetch');
 ```
 
-#### You Do: Fetch Request
+#### Fetch Request
 
 Use the `fetch()` method to retrieve data on **all countries** from the REST Countries API and console log the data. This is something you done many times in the past, so it should be familiar! We can program this fucntionality the same way we have done many times before.
 
@@ -111,7 +109,7 @@ Next, let's take a look at our `data.json` file. It has been populated with all 
 > Was our response successful?
 > When we are writing to a file that does not yet exist, what will happen?
 
-### You Do: Create a Country Model
+### Create a Country Model
 
 Now that we have all of the data in `data.json`, let's pick out the properties we want to include in our database. Oftentimes, you will find an API or dataset that has exactly the information you want - and then some. We want to create a database of countries that only includes the country's `name`, `capital`, `region` and `population`.
 
