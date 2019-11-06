@@ -255,6 +255,10 @@ What you should see is a list of records of the countries we seeded that include
 
 ![Success](https://media.giphy.com/media/vViFKLAOQdDlS/giphy.gif)
 
+### Solution
+
+Check out the Coutries API solution branch [here](https://git.generalassemb.ly/dc-wdi-node-express/countries-api/tree/solution).
+
 ## [License](LICENSE)
 
 1. All content is licensed under a CC­BY­NC­SA 4.0 license.
