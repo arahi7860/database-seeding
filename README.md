@@ -193,7 +193,7 @@ const Country = require('../models/Country.js')
 
 // ...
 
-Country.remove({})
+Country.deleteMany({})
     .then(() => {
         Country.create(countryData)
             .then(countries => {
