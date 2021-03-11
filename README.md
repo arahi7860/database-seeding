@@ -64,7 +64,7 @@ const fetch = require('node-fetch');
 
 #### Fetch Request
 
-Use the `fetch()` method to retrieve data on **all countries** from the REST Countries API and console log the data. This is something you done many times in the past, so it should be familiar! We can program this fucntionality the same way we have done many times before.
+Use the `fetch()` method to retrieve data on **all countries** from the REST Countries API and console log the data. This is something you done many times in the past, so it should be familiar! We can program this functionality the same way we have done many times before.
 
 > Since we are in a server-side environment, where will be look for the data?
 
