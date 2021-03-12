@@ -25,97 +25,70 @@ By the end of this, developers should be able to:
 
 ### Getting Started
 
-1. Fork and clone [this repository](https://git.generalassemb.ly/dc-wdi-node-express/countries-api)
-1. Change into directory
-1. Install all dependencies
-1. Examine the codebase
+Create a new Node project by creating a directory called `countries-api` and run `npm init` inside of it. It will create a `package.json` file for you.
 
-Take a few minutes to examine the codebase here.
 
-1. What dependencies are installed? What do they do and where are they required at this time?
-1. What files are included? What is the purpose of each file?
+### Install Our First Dependency: `node-fetch`
+Node does not have a native `fetch` function like web browsers do, so we will install a package called `node-fetch` via `npm install node-fetch`. Check your `package.json` and `node_modules` directory to see the module is installed.
+
 
 ### Fetch Data from the API
 
 For this application, we will be using the [REST Countries API](https://restcountries.eu/). Take a few moments to familiarize yourself with the API. What is the endpoint to fetch all countries from the API?
 
-<details>
-    <summary><b>GET All Countries</b></summary>
+Next, we will need to import the `node-fetch` dependency using the `require()` function. Let's do this in a file called `download.js`. This is where we will  retrieve data from the API.
 
 ```js
-'https://restcountries.eu/rest/v2/all'
-```
-</details>
-
-
-In the past, we have used the `fetch()` method in a browser environment. Now that we are using JavaScript in a server-side environment, we need to install `fetch`. First, run the command:
-
-```bash
-npm install node-fetch
-```
-
-This will install the dependency `node-fetch`. Next, we will need to import this dependency using the `require()` method. Let's do this in the `getCountries.js` file. This is where we will be retrieving data from the API.
-
-```js
-// db/getCountries.js
-
-const fetch = require('node-fetch');
+let fetch = require('node-fetch')
 ```
 
 #### Fetch Request
 
-Use the `fetch()` method to retrieve data on **all countries** from the REST Countries API and console log the data. This is something you done many times in the past, so it should be familiar! We can program this functionality the same way we have done many times before.
-
-> Since we are in a server-side environment, where will be look for the data?
-
+Use the `fetch()` method to retrieve data on **all countries** from the REST Countries API and log the data to the console. This is something you done many times in the past, so it should be familiar! We can program this functionality the same way we have done many times before.
 ```js
-// db/getCountries.js
+let fetch = require('node-fetch')
 
-const url = 'https://restcountries.eu/rest/v2/all'
-
-fetch(url)
-    .then(res => res.json())
-    .then(res => {
-        console.log(res)
-    })
+fetch('https://restcountries.eu/rest/v2/all')
+    .then(response => response.json())
+    .then(data => console.log(data))
 ```
 
 Take a look at the data that is being returned in the terminal. What is the structure of the JSON. What are the properties? How would we access the values within this data set?
 
 ### Write Data to the Filesystem
 
-Earlier, we used the `fs` module to write and read to/from the filesystem. We were able to write simple strings to text files and turn JavaScript objects into JSON strings, writing them to `.json` files. Let's implement this functionalty into our `fetch()` and write the data we are retrieving to a `.json` file within a Promise.
-
-Update the code in `getCountries.js`:
+Earlier, we used the `fs` module to read and write files. Let's implement this with `fetch()` and write the data to a `.json` file.
 
 ```js
-// db/getCountries.js
+let fetch = require('node-fetch')
+let fs = require('fs').promises
 
-const fs = require('fs')
-
-// ...
-
-fetch(url)
-    .then(res => res.json())
-    .then(res => {
-        let countries = JSON.stringify(res)
-        fs.writeFile('./db/data.json', countries, err => {
-            if (err) {
-                console.log(err)
-            } else {
-                console.log('success')
-            }
-        })
-    })
+fetch('https://restcountries.eu/rest/v2/all')
+  .then(response=> response.json())
+  .then(data=> fs.writeFile("./countries.json", JSON.stringify(data)))
 ```
 
 Let's review what's happening here:
 
-1. Within our second Promise, we are declaring the variable `countries` and saving our API response as a JSON string.
-1. Next, we are writing the data from teh variable `countries` to a file named `./db/data.json`.
-1. We have set up our callback function to let us know whether or not there was an error. If we successfully wrote the data to the filesystem, the string `success` will appear in the terminal.
+1. First we import our `node-fetch` module as `fetch`.
+1. Next we import the `fs` module. Note that we use `require('fs').promises` instead of `require('fs')`. The former lets us use `fs` with promises rather than the (older, messier) callback pattern.
+1. Next we make our fetch request, then parse the JSON in the request body.
+1. Finally, we change the `data` into a string with `JSON.stringify(data)` and write it to a file called `data.json` with `fs.writeFile()`.
 
-In your terminal, run the command `node db/getCountries.js`.
+Let's make our code a little more robust by handing errors. We can do that by adding a `catch` to our promise chain.
+
+```js
+fetch('https://restcountries.eu/rest/v2/all')
+  .then(response=> response.json())
+  .then(data=> fs.writeFile("./data.json", JSON.stringify(data)))
+  .catch(error=> console.log(error))
+```
+
+Now if either the fetch fails, the JSON parse fails or the write file fails we will handle the error. 
+
+### Running the Code
+
+In your terminal, run the script via `node download.js`.
 
 Next, let's take a look at our `data.json` file. It has been populated with all of the data we pulled from the REST Countries API!
 
@@ -126,28 +99,22 @@ Next, let's take a look at our `data.json` file. It has been populated with all 
 
 Now that we have all of the data in `data.json`, let's pick out the properties we want to include in our database. Oftentimes, you will find an API or dataset that has exactly the information you want - and then some. We want to create a database of countries that only includes the country's `name`, `capital`, `region` and `population`.
 
-In `models/Country.js`, build a model to include the above properties. Pay attention to the data types from the data we have in our `data.json` file. In addition to the the Schema, what else do you need in this file?
+In `Country.js`, build a model to include the above properties. Pay attention to the data types from the data we have in our `data.json` file. In addition to the the Schema, what else do you need in this file?
 
 ```js
-// models/Country.js
+let mongoose = require('mongoose')
 
-const Schema = mongoose.Schema
-
-const Country = new Schema({
+const countrySchema = new mongoose.Schema({
     name: String,
     capital: String,
     region: String,
     population: Number
 })
 
-module.exports = mongoose.model('Country', Country)
+module.exports = mongoose.model('Country', countrySchema)
 ```
 
-What's happening here?
-
-1. First, we a variable `Schema` and giving it a value of `mongoose.Schema`.
-1. Next, we create our `Country` Schema with the appropriate properties and data types.
-1. Finally, we will export our `Country` Schema to make it available to be imported - or required - within other files in our application.
+What's happening here? We create our `Country` Schema with the appropriate properties and data types, then we build and export our `Country` model to make it available to other files in our application.
 
 ### Create a New Data Set
 
@@ -156,13 +123,10 @@ We have a TON of data in our `data.json` file. We need some of it, but most of i
 > Regardless of where you get your data, it is **extremely** important to examine it before using it. Every data set is structured differently, and only when you familiarize yourself its architecture can you successfully access the values you want.
 
 In `seed.js`, add the following code:
-
 ```js
-// db/seed.js
+let data = require('./data.json')
 
-const data = require('./data.json')
-
-const countryData = data.map(item => {
+let countryData = data.map(item => {
     const country = {}
     country.name = item.name
     country.capital = item.capital
@@ -170,48 +134,72 @@ const countryData = data.map(item => {
     country.population = item.population
     return country
 })
-```
 
-Next, console log your new array:
-
-```js
 console.log(countryData)
 ```
 
-And run `node db/seed.js` in the terminal. What do you see?
+Run `node seed.js` in the terminal. What do you see?
 
-### Let's Seed Our Data!
-
-Now that we have everything set up the way we want, it's time to actually seed our data - meaning we are going to write some code that adds our new array of data to our local database using Mongoose queries.
-
-Add the following code to `db/seed.js`:
+### Create a Database Connection
+As we've done before, we'll write a `connection.js` file to connect to the database with Mongoose.
 
 ```js
-// db/seed.js
+let mongoose = require('mongoose')
 
-const Country = require('../models/Country.js')
+let mongooseConnectionConfig = { useNewUrlParser: true, useUnifiedTopology: true }
+mongoose.connect("mongodb://localhost/countries", mongooseConnectionConfig)
+```
+In the previous code we import Mongoose and connect to our local MongoDB for a database called `countries`. We also pass in some extra configuration variables we can otherwise ignore; they're for newer features of Mongoose that we want to use that are not backwards-compatible with older versions.
 
-// ...
+Let's add some event listeners to `connection.js` that will let us know when the database is connected, disconnected, or if an error occurs.
 
-Country.deleteMany({})
-    .then(() => {
-        Country.create(countryData)
-            .then(countries => {
-                console.log(countries)
-            })
-            .catch(err => {
-                console.log(err)
-            })
-    })
+```js
+mongoose.connection.on('connected', ()=> console.log("Connected to database"))
+mongoose.connection.on('disconnected', ()=> console.log("Disconnected from database"))
+mongoose.connection.on('error', error=> console.error("Database error", error))
+```
+
+We can run `node connection.js` and see if our connection works. Remember to use `<ctrl>+C` to quit with an open database connection.
+
+### Let's Seed Our Data to the Database!
+
+Now that we have everything set up the way we want, it's time to actually seed our data - meaning we are going to write code to add our array of countries to the local database with Mongoose.
+
+```js
+require('./connection')
+let mongoose = require('mongoose')
+let data = require('./data.json')
+let Country = require('./Country')
+
+let countryData = data.map(item => {
+    const country = {}
+    country.name = item.name
+    country.capital = item.capital
+    country.region = item.region
+    country.population = item.population
+    return country
+})
+
+Country
+  .deleteMany({})
+  .then(()=> Country.create(countryData))
+  .then(mongoose.disconnect)
+  .then(()=> console.log("Done!"))
+  .catch(()=> console.log("Error", error))
+
 ```
 
 Let's break this down:
 
-1. First we are removing all records from the `countries` collection in the `countries_db` database. This is a common step when seeding your database. Clear your collection first so that you can add a fresh collection of documents.
+1. First is our dependencies. We import `connection.js` to run the code that connects Node to MongoDB. Note that we don't need to return any variables so we don't do an assignment. We also import Mongoose, our JSON data and our Country model.
+1. Then we parse our JSON data into our smaller `countryData` array that fits with our Country model's schema.
+1. Now we remove all the documents from the `countries` collection in the database with `Country.deleteMany({})`. This is a common step when seeding your database to avoid duplicated data.
+1. Then, we insert our `countryData` into the database with `Country.create`. 
 1. Next we are adding a Promise to add country records with the `countryData` array that we just created.
-1. Finally, if the request is successful, we will console log the countries. We will use `.catch` to catch an error and console log it if there is one.
+1. Then, since we are done with our database we will disconnect from it with `mongoose.disconnect`.
+1. Finally, if the request is successful, we will log "Done!". We use `.catch` to catch and log an error if any of the preceeding steps fail.
 
-In the terminal, run your MongoDB server. Then, run the command `node db/seed.js`. What do you see? Where is this output coming from?
+In the terminal, run your MongoDB server. Then, run the command `node seed.js`. What do you see? Where is this output coming from?
 
 ### Verify in the Mongo Shell
 
@@ -226,7 +214,7 @@ show dbs
 Connect to the database:
 
 ```bash
-use countries_db
+use countries
 ```
 
 List your collections:
@@ -256,11 +244,7 @@ What you should see is a list of records of the countries we seeded that include
 
 **SUCCESS!!** You just seeded a database! Now, you can use what you already learned to interact with this new data set in MongoDB.
 
-![Success](https://media.giphy.com/media/vViFKLAOQdDlS/giphy.gif)
-
-### Solution
-
-Check out the Coutries API solution branch [here](https://git.generalassemb.ly/dc-wdi-node-express/countries-api/tree/solution).
+![Success!](https://media.giphy.com/media/vViFKLAOQdDlS/giphy.gif)
 
 ## [License](LICENSE)
 
