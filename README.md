@@ -21,7 +21,7 @@ By the end of this, developers should be able to:
 - Define a model based on a few properties of the data set fetched from the API
 - Seed data to a local MongoDB database
 
-## [Countries API App](https://git.generalassemb.ly/dc-wdi-node-express/countries-api)
+## [Countries API App](https://git.generalassemb.ly/sei-axolotls/countries-api)
 
 ### Getting Started
 
@@ -34,21 +34,30 @@ Node does not have a native `fetch` function like web browsers do, so we will in
 
 ### Fetch Data from the API
 
-For this application, we will be using the [REST Countries API](https://restcountries.eu/). Take a few moments to familiarize yourself with the API. What is the endpoint to fetch all countries from the API?
+For this application, we will be using the [REST Countries API](https://restcountries.com/). Take a few moments to familiarize yourself with the API. What is the endpoint to fetch all countries from the API?
 
-Next, we will need to import the `node-fetch` dependency using the `require()` function. Let's do this in a file called `download.js`. This is where we will  retrieve data from the API.
+Next, we will need to import the `node-fetch` dependency as a module. To do that, first we need include the following in our `package.json`:
 
 ```js
-let fetch = require('node-fetch')
+{
+  ...,
+  "type": "module",
+}
+```
+
+Next, let's do this in a file called `download.js`. This is where we will  retrieve data from the API.
+
+```js
+import fetch from 'node-fetch'
 ```
 
 #### Fetch Request
 
 Use the `fetch()` method to retrieve data on **all countries** from the REST Countries API and log the data to the console. This is something you done many times in the past, so it should be familiar! We can program this functionality the same way we have done many times before.
 ```js
-let fetch = require('node-fetch')
+import fetch from 'node-fetch'
 
-fetch('https://restcountries.eu/rest/v2/all')
+fetch('https://restcountries.com/v3.1/all')
     .then(response => response.json())
     .then(data => console.log(data))
 ```
@@ -57,23 +66,36 @@ Take a look at the data that is being returned in the terminal. What is the stru
 
 ### Write Data to the Filesystem
 
-Earlier, we used the `fs` module to read and write files. Let's implement this with `fetch()` and write the data to a `.json` file.
+Earlier, we used the `fs` module to read and write files. Let's implement this with `fetch()` and write the data to a `.json` file. We're only going to be using the `promises` export of `fs` so we can specify that with our import like this:
 
 ```js
-let fetch = require('node-fetch')
-let fs = require('fs').promises
-
-fetch('https://restcountries.eu/rest/v2/all')
-  .then(response=> response.json())
-  .then(data=> fs.writeFile("./countries.json", JSON.stringify(data)))
+import fetch from 'node-fetch'
+import {promises} from 'fs'
 ```
 
-Let's review what's happening here:
+If we want to rename that import to something else, we can use `as`. Let's just
+call it fsPromises for the sake of clarity.
+```js
+import fetch from 'node-fetch'
+import {promises as fsPromises} from 'fs'
+```
 
-1. First we import our `node-fetch` module as `fetch`.
-1. Next we import the `fs` module. Note that we use `require('fs').promises` instead of `require('fs')`. The former lets us use `fs` with promises rather than the (older, messier) callback pattern.
+Now, we can use it to take the promise from our `fetch` and write it to a file
+```js
+import fetch from 'node-fetch'
+import {promises as fsPromises} from 'fs'
+
+fetch('https://restcountries.com/v3.1/all')
+  .then(response=> response.json())
+  .then(data => fsPromises.writeFile("./countries.json", JSON.stringify(data)))
+```
+
+Let's review:
+
+1. First we imported our `node-fetch` module as `fetch`.
+1. Next we import the `fs` module. Note that we use `import {promises as fsPromises} from 'fs'` instead of `import fs from 'fs'`. The former lets us use `fs` with promises rather than the (older, messier) callback pattern.
 1. Next we make our fetch request, then parse the JSON in the request body.
-1. Finally, we change the `data` into a string with `JSON.stringify(data)` and write it to a file called `data.json` with `fs.writeFile()`.
+1. Finally, we change the `data` into a string with `JSON.stringify(data)` and write it to a file called `data.json` with `fsPromises.writeFile()`.
 
 Let's make our code a little more robust by handing errors. We can do that by adding a `catch` to our promise chain.
 
@@ -81,7 +103,7 @@ Let's make our code a little more robust by handing errors. We can do that by ad
 fetch('https://restcountries.eu/rest/v2/all')
   .then(response=> response.json())
   .then(data=> fs.writeFile("./data.json", JSON.stringify(data)))
-  .catch(error=> console.log(error))
+  .catch(error=> console.error(error))
 ```
 
 Now if either the fetch fails, the JSON parse fails or the write file fails we will handle the error. 
@@ -102,7 +124,7 @@ Now that we have all of the data in `data.json`, let's pick out the properties w
 In `Country.js`, build a model to include the above properties. Pay attention to the data types from the data we have in our `data.json` file. In addition to the the Schema, what else do you need in this file?
 
 ```js
-let mongoose = require('mongoose')
+import mongoose from 'mongoose'
 
 const countrySchema = new mongoose.Schema({
     name: String,
@@ -111,7 +133,7 @@ const countrySchema = new mongoose.Schema({
     population: Number
 })
 
-module.exports = mongoose.model('Country', countrySchema)
+export default mongoose.model('Country', countrySchema)
 ```
 
 What's happening here? We create our `Country` Schema with the appropriate properties and data types, then we build and export our `Country` model to make it available to other files in our application.
@@ -124,7 +146,7 @@ We have a TON of data in our `data.json` file. We need some of it, but most of i
 
 In `seed.js`, add the following code:
 ```js
-let data = require('./data.json')
+import data from './countries.json' assert { type: 'json' }
 
 let countryData = data.map(item => {
     const country = {}
@@ -138,16 +160,19 @@ let countryData = data.map(item => {
 console.log(countryData)
 ```
 
-Run `node seed.js` in the terminal. What do you see?
+Note that you need to use `assert { type: 'json' }` in order to avoid an error
+when bringing in a JSON file with `import` 
+
+Now lets run `node seed.js` in the terminal. What do you see?
 
 ### Create a Database Connection
 As we've done before, we'll write a `connection.js` file to connect to the database with Mongoose.
 
 ```js
-let mongoose = require('mongoose')
+import mongoose from 'mongoose'
 
 let mongooseConnectionConfig = { useNewUrlParser: true, useUnifiedTopology: true }
-mongoose.connect("mongodb://localhost/countries", mongooseConnectionConfig)
+mongoose.connect('mongodb://localhost:27017/countries', mongooseConnectionConfig)
 ```
 In the previous code we import Mongoose and connect to our local MongoDB for a database called `countries`. We also pass in some extra configuration variables we can otherwise ignore; they're for newer features of Mongoose that we want to use that are not backwards-compatible with older versions.
 
@@ -159,6 +184,12 @@ mongoose.connection.on('disconnected', ()=> console.log("Disconnected from datab
 mongoose.connection.on('error', error=> console.error("Database error", error))
 ```
 
+And finally, lets export our connection so we can import it elsewhere
+
+```js
+export default mongoose.connection
+```
+
 We can run `node connection.js` and see if our connection works. Remember to use `<ctrl>+C` to quit with an open database connection.
 
 ### Let's Seed Our Data to the Database!
@@ -166,32 +197,37 @@ We can run `node connection.js` and see if our connection works. Remember to use
 Now that we have everything set up the way we want, it's time to actually seed our data - meaning we are going to write code to add our array of countries to the local database with Mongoose.
 
 ```js
-require('./connection')
-let mongoose = require('mongoose')
-let data = require('./data.json')
-let Country = require('./Country')
+import mongoose from 'mongoose'
+import connection from './connection.js'
+import data from './countries.json' assert { type: 'json' }
+import Country from './Country.js'
 
 let countryData = data.map(item => {
-    const country = {}
-    country.name = item.name
-    country.capital = item.capital
-    country.region = item.region
-    country.population = item.population
-    return country
+  const country = {}
+  country.name = item.name.official
+
+  // Some of the capitals are undefined!
+  item.capital ?
+    country.capital = item.capital[0]
+    : country.capital = ''
+
+  country.region = item.region
+  country.population = item.population
+  return country
 })
 
 Country
   .deleteMany({})
-  .then(()=> Country.create(countryData))
+  .then(() => Country.create(countryData))
   .then(mongoose.disconnect)
-  .then(()=> console.log("Done!"))
-  .catch(()=> console.log("Error", error))
+  .then(() => console.log("Done!"))
+  .catch(error => console.log("Error", error))
 
 ```
 
 Let's break this down:
 
-1. First is our dependencies. We import `connection.js` to run the code that connects Node to MongoDB. Note that we don't need to return any variables so we don't do an assignment. We also import Mongoose, our JSON data and our Country model.
+1. First is our dependencies. We import `connection.js` to run the code that connects Node to MongoDB. We also import Mongoose, our JSON data and our Country model.
 1. Then we parse our JSON data into our smaller `countryData` array that fits with our Country model's schema.
 1. Now we remove all the documents from the `countries` collection in the database with `Country.deleteMany({})`. This is a common step when seeding your database to avoid duplicated data.
 1. Then, we insert our `countryData` into the database with `Country.create`. 
@@ -226,7 +262,7 @@ show collections
 Last but not least, read the data you have just added!
 
 ```bash
-db.countries.find().pretty()
+db.countries.find()
 ```
 
 What you should see is a list of records of the countries we seeded that include the properties we specified earlier in addition to `ObjectId` and `__v` properties.
