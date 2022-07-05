@@ -100,7 +100,7 @@ Let's review:
 Let's make our code a little more robust by handing errors. We can do that by adding a `catch` to our promise chain.
 
 ```js
-fetch('https://restcountries.eu/rest/v2/all')
+fetch('fetch('https://restcountries.com/v3.1/all')
   .then(response=> response.json())
   .then(data=> fs.writeFile("./data.json", JSON.stringify(data)))
   .catch(error=> console.error(error))
