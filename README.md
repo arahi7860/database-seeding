@@ -219,7 +219,7 @@ let countryData = data.map(item => {
 Country
   .deleteMany({})
   .then(() => Country.create(countryData))
-  .then(mongoose.disconnect)
+  .then(mongoose.disconnect())
   .then(() => console.log("Done!"))
   .catch(error => console.log("Error", error))
 
