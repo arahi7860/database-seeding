@@ -21,7 +21,7 @@ By the end of this, developers should be able to:
 - Define a model based on a few properties of the data set fetched from the API
 - Seed data to a local MongoDB database
 
-## [Countries API App](https://git.generalassemb.ly/sei-axolotls/countries-api)
+## [Countries API App](https://git.generalassemb.ly/sei-buffleheads/countries-api)
 
 ### Getting Started
 
