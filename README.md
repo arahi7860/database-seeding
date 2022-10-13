@@ -41,7 +41,7 @@ Next, we will need to import the `node-fetch` dependency as a module. To do that
 ```js
 {
   ...,
-  "type": "module",
+  "type": "module"
 }
 ```
 
